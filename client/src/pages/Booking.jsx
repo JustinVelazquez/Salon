@@ -1,14 +1,23 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Calendar from 'react-calendar';
 import { useNavigate } from 'react-router-dom';
 import { services, stylists } from '../constants/index.js';
 
 const Booking = () => {
-  const [name, setName] = useState('value');
-  const [email, setEmail] = useState('email');
-  const [service, setService] = useState('');
-  const [stylist, setStylist] = useState('');
   const [date, setDate] = useState(new Date());
+
+  const [form, setForm] = useState({
+    name: '',
+    email: '',
+    service: '',
+    stylist: '',
+    date: date,
+  });
+
+  useEffect(() => {
+    setForm({ ...form, date: date });
+  }, [date]);
+
 
   const navigate = useNavigate();
 
@@ -21,12 +30,16 @@ const Booking = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ name, email, date, service, stylist }),
+        body: JSON.stringify(form),
       });
       await response.json();
       if (response.ok) {
         alert(
-          `Booking for ${name} on ${date.toLocaleString()} was successful. We will send an email to ${email} with available times`
+          `Booking for ${
+            form.name
+          } on ${form.date.toLocaleDateString()} was successful. We will send an email to ${
+            form.email
+          } with available times`
         );
         navigate('/');
       } else {
@@ -46,17 +59,17 @@ const Booking = () => {
           <input
             type="text"
             id="name"
-            value={name}
+            value={form.name}
             required
-            onChange={(e) => setName(e.target.value)}
+            onChange={(e) => setForm({ ...form, name: e.target.value })}
           />
           <label htmlFor="email">Email</label>
           <input
             type="text"
             id="email"
-            value={email}
+            value={form.email}
             required
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) => setForm({ ...form, email: e.target.value })}
           />
         </div>
         <br />
@@ -70,9 +83,9 @@ const Booking = () => {
           <select
             type="text"
             id="service"
-            value={service}
+            value={form.service}
             required
-            onChange={(e) => setService(e.target.value)}
+            onChange={(e) => setForm({ ...form, service: e.target.value })}
           >
             <option value="" disabled>
               Select a service
@@ -87,8 +100,8 @@ const Booking = () => {
           <select
             type="text"
             id="stylist"
-            value={stylist}
-            onChange={(e) => setStylist(e.target.value)}
+            value={form.stylist}
+            onChange={(e) => setForm({ ...form, stylist: e.target.value })}
           >
             <option value="" disabled>
               Select a stylist (optional)
